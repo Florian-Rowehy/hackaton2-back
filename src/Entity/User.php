@@ -37,12 +37,12 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $coord_x;
+    private $coordX;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $coord_y;
+    private $coordY;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -124,24 +124,24 @@ class User implements UserInterface
 
     public function getCoordX(): ?int
     {
-        return $this->coord_x;
+        return $this->coordX;
     }
 
-    public function setCoordX(?int $coord_x): self
+    public function setCoordX(?int $coordX): self
     {
-        $this->coord_x = $coord_x;
+        $this->coordX = $coordX;
 
         return $this;
     }
 
     public function getCoordY(): ?int
     {
-        return $this->coord_y;
+        return $this->coordY;
     }
 
-    public function setCoordY(?int $coord_y): self
+    public function setCoordY(?int $coordY): self
     {
-        $this->coord_y = $coord_y;
+        $this->coordY = $coordY;
 
         return $this;
     }
