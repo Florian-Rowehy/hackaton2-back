@@ -34,6 +34,21 @@ class User implements UserInterface
      */
     private $password;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $coord_x;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $coord_y;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $avatar;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,5 +120,41 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getCoordX(): ?int
+    {
+        return $this->coord_x;
+    }
+
+    public function setCoordX(?int $coord_x): self
+    {
+        $this->coord_x = $coord_x;
+
+        return $this;
+    }
+
+    public function getCoordY(): ?int
+    {
+        return $this->coord_y;
+    }
+
+    public function setCoordY(?int $coord_y): self
+    {
+        $this->coord_y = $coord_y;
+
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(string $avatar): self
+    {
+        $this->avatar = $avatar;
+
+        return $this;
     }
 }
