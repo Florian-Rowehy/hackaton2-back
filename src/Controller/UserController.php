@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/api/", name="user_")
+ * @Route("/api/users", name="user_")
  */
 class UserController extends AbstractController
 {
