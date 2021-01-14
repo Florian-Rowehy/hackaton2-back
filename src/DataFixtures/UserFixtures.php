@@ -26,7 +26,7 @@ class UserFixtures extends Fixture
             'nico',
             'alex'
         ];
-        foreach ($users as $username) {
+        foreach ($users as $key => $username) {
             $user = new User();
             $user
                 ->setUsername($username)
@@ -34,6 +34,7 @@ class UserFixtures extends Fixture
                 ->setAvatar('https://img.favpng.com/18/19/24/nyan-cat-youtube-png-favpng-G1cs1DiEzDQhHaAgXduVYB2Dp.jpg')
             ;
             $manager->persist($user);
+            $this->addReference('user_' . $key, $user);
         }
         $manager->flush();
     }

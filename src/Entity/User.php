@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -48,6 +50,16 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     private $avatar;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Lunch::class, mappedBy="author")
+     */
+    private $lunches;
+
+    public function __construct()
+    {
+        $this->lunches = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -154,6 +166,36 @@ class User implements UserInterface
     public function setAvatar(string $avatar): self
     {
         $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Lunch[]
+     */
+    public function getLunches(): Collection
+    {
+        return $this->lunches;
+    }
+
+    public function addLunch(Lunch $lunch): self
+    {
+        if (!$this->lunches->contains($lunch)) {
+            $this->lunches[] = $lunch;
+            $lunch->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLunch(Lunch $lunch): self
+    {
+        if ($this->lunches->removeElement($lunch)) {
+            // set the owning side to null (unless already changed)
+            if ($lunch->getAuthor() === $this) {
+                $lunch->setAuthor(null);
+            }
+        }
 
         return $this;
     }
