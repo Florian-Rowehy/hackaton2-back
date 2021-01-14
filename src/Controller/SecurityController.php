@@ -16,7 +16,7 @@ class SecurityController extends AbstractController
     /**
      * @Route("/login", name="login")
      */
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(AuthenticationUtils $authenticationUtils)
     {
         if ($this->getUser()) {
             $user = $this->getUser();
@@ -29,7 +29,7 @@ class SecurityController extends AbstractController
         $lastUsername = $authenticationUtils->getLastUsername();
 
         //return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
-        return $this->json(['last_username' => $lastUsername, 'error' => $error]);
+        if ($error) return $this->json(['last_username' => $lastUsername, 'error' => $error], 401);
     }
 
     /**
