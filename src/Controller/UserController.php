@@ -33,7 +33,7 @@ class UserController extends AbstractController
     /**
      * @Route("/listen", name="listen")
      */
-    public function listen(MessageBusInterface $bus, SerializerInterface $serializer, UserRepository $userRepository): Response
+    public function listen(MessageBusInterface $bus, SerializerInterface $serializer, UserRepository $userRepository)
     {
         $users = $userRepository->findAll();
         $update = new Update(
@@ -60,16 +60,17 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/move/{x}/{y}", name="move", requirements={"x"="[0-9]+", "y"="[0-9]+"}, methods={"GET"})
+     * @Route("/move/{id}/{x}/{y}", name="move", requirements={"x"="[0-9]+", "y"="[0-9]+"}, methods={"GET"})
      */
-    public function move(int $x, int $y, EntityManagerInterface $em, TileRepository $tileRepository): Response
+    public function move(int $id, int $x, int $y, EntityManagerInterface $em, TileRepository $tileRepository, UserRepository $userRepository)
     {
-        $user = $this->getUser();
+        $user = $userRepository->findOneById($id);
         if ($tileRepository->isMovableTile($x, $y)) {
             $user->setCoordX($x);
             $user->setCoordY($y);
+            $em->flush();
+            return $this->redirectToRoute('user_listen');
         }
-        $em->flush();
-        return $this->json($user);
+        return $this->json(false);
     }
 }
