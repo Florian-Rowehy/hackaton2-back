@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/api/", name="user_")
+ * @Route("/api/users", name="user_")
  */
 class UserController extends AbstractController
 {
@@ -20,20 +20,36 @@ class UserController extends AbstractController
      */
     public function index(UserRepository $userRepository): Response
     {
-        $user = $userRepository->findAll();
-        return $this->json($user);
+        $users = $userRepository->findAll();
+        return $this->json($users);
     }
 
-    public function __invoke(PublisherInterface $publisher, SerializerInterface $serializer): Response
+    /**
+     * @Route("/listen", name="listen")
+     */
+    public function listen(PublisherInterface $publisher, SerializerInterface $serializer, UserRepository $userRepository): Response
     {
+        $users = $userRepository->findAll();
         $update = new Update(
-            $this->generateUrl('user_index'),
-            json_encode(['status' => 'OutOfStock'])
+            '/users',
+            $serializer->serialize($users, 'json')
+        );
+        $publisher($update);
+        return new Response('published!');
+    }
+
+    /*
+    public function __invoke(PublisherInterface $publisher, SerializerInterface $serializer, UserRepository $userRepository): Response
+    {
+        $users = $userRepository->findAll();
+        $update = new Update(
+            '/api/users/listen',
+            $serializer->serialize($users, 'json')
         );
 
         // The Publisher service is an invokable object
         $publisher($update);
 
         return new Response('published!');
-    }
+    }*/
 }
