@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\TileRepository;
 use App\Repository\UserRepository;
 use App\Service\MoveManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -9,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mercure\PublisherInterface;
 use Symfony\Component\Mercure\Update;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -24,15 +26,31 @@ class UserController extends AbstractController
      */
     public function index(UserRepository $userRepository): Response
     {
-        $user = $userRepository->findAll();
-        return $this->json($user);
+        $users = $userRepository->findAll();
+        return $this->json($users);
     }
 
-    public function __invoke(PublisherInterface $publisher, SerializerInterface $serializer): Response
+    /**
+     * @Route("/listen", name="listen")
+     */
+    public function listen(MessageBusInterface $bus, SerializerInterface $serializer, UserRepository $userRepository)
     {
+        $users = $userRepository->findAll();
         $update = new Update(
-            $this->generateUrl('user_index'),
-            json_encode(['status' => 'OutOfStock'])
+            'users',
+            $serializer->serialize($users, 'json')
+        );
+        $bus->dispatch($update);
+        return new Response('published!');
+    }
+
+
+    public function __invoke(PublisherInterface $publisher, SerializerInterface $serializer, UserRepository $userRepository): Response
+    {
+        $users = $userRepository->findAll();
+        $update = new Update(
+            'users',
+            $serializer->serialize($users, 'json')
         );
 
         // The Publisher service is an invokable object
@@ -42,25 +60,17 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/move/{x}/{y}", name="move", requirements={"x"="[0-9]", "y"="[0-9]"}, methods={"POST"})
-     * @param int $x
-     * @param int $y
-     * @param UserRepository $ur
-     * @param EntityManagerInterface $em
-     * @param MoveManager $moveManager
-     * @return Response
+     * @Route("/move/{id}/{x}/{y}", name="move", requirements={"x"="[0-9]+", "y"="[0-9]+"}, methods={"GET"})
      */
-    public function move(int $x, int $y, UserRepository $ur, EntityManagerInterface $em, MoveManager $moveManager): Response
+    public function move(int $id, int $x, int $y, EntityManagerInterface $em, TileRepository $tileRepository, UserRepository $userRepository)
     {
-        $user = $ur->findOneBy(['username' => $this->getUser()->getUsername()]);
-        $user->setCoordX($x);
-        $user->setCoordY($y);
-
-        if ($moveManager->tileExists($user->getCoordX(), $user->getCoordY())) {
-            $em->persist($user);
+        $user = $userRepository->findOneById($id);
+        if ($tileRepository->isMovableTile($x, $y)) {
+            $user->setCoordX($x);
+            $user->setCoordY($y);
             $em->flush();
+            return $this->redirectToRoute('user_listen');
         }
-
-        return $this->redirectToRoute('tile_index');
+        return $this->json(false);
     }
 }
