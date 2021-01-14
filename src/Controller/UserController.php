@@ -27,7 +27,7 @@ class UserController extends AbstractController
     public function index(UserRepository $userRepository): Response
     {
         $users = $userRepository->findAll();
-        return $this->json($users);
+        return $this->json($users, 200, [], ['groups' => ['user','lunch']]);
     }
 
     /**
@@ -38,7 +38,7 @@ class UserController extends AbstractController
         $users = $userRepository->findAll();
         $update = new Update(
             'users',
-            $serializer->serialize($users, 'json')
+            $serializer->serialize($users, 'json', ['groups' => ['user','lunch']])
         );
         $bus->dispatch($update);
         return new Response('published!');

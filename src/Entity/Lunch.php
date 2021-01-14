@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\LunchRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=LunchRepository::class)
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Lunch
 {
     /**
+     * @Groups("lunch")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -18,31 +20,37 @@ class Lunch
     private $id;
 
     /**
+     * @Groups("lunch")
      * @ORM\Column(type="string", length=255)
      */
     private $name;
 
     /**
+     * @Groups("lunch")
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $image;
 
     /**
+     * @Groups("lunch")
      * @ORM\Column(type="integer", nullable=true)
      */
     private $rate;
 
     /**
+     * @Groups("lunch")
      * @ORM\Column(type="string", length=255)
      */
     private $content;
 
     /**
+     * @Groups("user_detail")
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="lunches")
      */
     private $author;
 
     /**
+     * @Groups("lunch")
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $created_at;

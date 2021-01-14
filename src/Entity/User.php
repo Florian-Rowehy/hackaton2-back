@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -14,6 +15,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface
 {
     /**
+     * @Groups("user")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -21,37 +23,44 @@ class User implements UserInterface
     private $id;
 
     /**
+     * @Groups("user")
      * @ORM\Column(type="string", length=180, unique=true)
      */
     private $username;
 
     /**
+     * @Groups("user")
      * @ORM\Column(type="json")
      */
     private $roles = [];
 
     /**
+     * @Groups("user")
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
     private $password;
 
     /**
+     * @Groups("user")
      * @ORM\Column(type="integer", nullable=true)
      */
     private $coordX;
 
     /**
+     * @Groups("user")
      * @ORM\Column(type="integer", nullable=true)
      */
     private $coordY;
 
     /**
+     * @Groups("user")
      * @ORM\Column(type="string", length=255)
      */
     private $avatar;
 
     /**
+     * @Groups("user")
      * @ORM\OneToMany(targetEntity=Lunch::class, mappedBy="author")
      */
     private $lunches;
