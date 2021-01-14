@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mercure\PublisherInterface;
 use Symfony\Component\Mercure\Update;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -27,23 +28,23 @@ class UserController extends AbstractController
     /**
      * @Route("/listen", name="listen")
      */
-    public function listen(PublisherInterface $publisher, SerializerInterface $serializer, UserRepository $userRepository): Response
+    public function listen(MessageBusInterface $bus, SerializerInterface $serializer, UserRepository $userRepository): Response
     {
         $users = $userRepository->findAll();
         $update = new Update(
-            '/users',
+            'users',
             $serializer->serialize($users, 'json')
         );
-        $publisher($update);
+        $bus->dispatch($update);
         return new Response('published!');
     }
 
-    /*
+
     public function __invoke(PublisherInterface $publisher, SerializerInterface $serializer, UserRepository $userRepository): Response
     {
         $users = $userRepository->findAll();
         $update = new Update(
-            '/api/users/listen',
+            'users',
             $serializer->serialize($users, 'json')
         );
 
@@ -51,5 +52,5 @@ class UserController extends AbstractController
         $publisher($update);
 
         return new Response('published!');
-    }*/
+    }
 }
