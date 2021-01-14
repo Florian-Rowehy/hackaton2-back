@@ -1,0 +1,8 @@
+authtoken: tonTOKEN
+tunnels:
+  first:
+    addr: 3000
+    proto: http
+  second:
+    addr: 8080
+    proto: http

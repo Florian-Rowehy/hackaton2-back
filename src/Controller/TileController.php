@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class TileController extends AbstractController
 {
     /**
-     * @Route("/", name="index")
+     * @Route("/", name="index", methods={"GET"})
      */
     public function index(TileRepository $tileRepository): Response
     {
