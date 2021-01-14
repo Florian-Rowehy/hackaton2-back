@@ -19,6 +19,19 @@ class TileRepository extends ServiceEntityRepository
         parent::__construct($registry, Tile::class);
     }
 
+    public function isMovableTile(int $x, int $y): bool
+    {
+        return ((bool) $this->createQueryBuilder('t')
+            ->andWhere('t.coordX = :x')
+            ->setParameter('x', $x)
+            ->andWhere('t.coordY = :y')
+            ->setParameter('y', $y)
+            ->andWhere('t.room IS NOT NULL')
+            ->getQuery()
+            ->getResult())
+            ;
+    }
+
     // /**
     //  * @return Tile[] Returns an array of Tile objects
     //  */

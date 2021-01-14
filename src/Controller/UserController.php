@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\TileRepository;
 use App\Repository\UserRepository;
 use App\Service\MoveManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -59,25 +60,16 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/move/{x}/{y}", name="move", requirements={"x"="[0-9]", "y"="[0-9]"}, methods={"POST"})
-     * @param int $x
-     * @param int $y
-     * @param UserRepository $ur
-     * @param EntityManagerInterface $em
-     * @param MoveManager $moveManager
-     * @return Response
+     * @Route("/move/{x}/{y}", name="move", requirements={"x"="[0-9]+", "y"="[0-9]+"}, methods={"GET"})
      */
-    public function move(int $x, int $y, UserRepository $ur, EntityManagerInterface $em, MoveManager $moveManager): Response
+    public function move(int $x, int $y, EntityManagerInterface $em, TileRepository $tileRepository): Response
     {
-        $user = $ur->findOneBy(['username' => $this->getUser()->getUsername()]);
-        $user->setCoordX($x);
-        $user->setCoordY($y);
-
-        if ($moveManager->tileExists($user->getCoordX(), $user->getCoordY())) {
-            $em->persist($user);
-            $em->flush();
+        $user = $this->getUser();
+        if ($tileRepository->isMovableTile($x, $y)) {
+            $user->setCoordX($x);
+            $user->setCoordY($y);
         }
-
-        return $this->redirectToRoute('tile_index');
+        $em->flush();
+        return $this->json($user);
     }
 }
